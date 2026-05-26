@@ -1,0 +1,572 @@
+
+<style>
+  h2.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font-mono,'Courier New',monospace)}
+  #app{display:flex;height:100vh;min-height:600px;background:var(--color-background-tertiary)}
+  #sidebar{width:240px;flex-shrink:0;background:var(--color-background-primary);border-right:0.5px solid var(--color-border-tertiary);overflow-y:auto;display:flex;flex-direction:column}
+  #sidebar-header{padding:1rem;border-bottom:0.5px solid var(--color-border-tertiary)}
+  #sidebar-header h1{font-size:13px;font-weight:500;color:var(--color-text-secondary);letter-spacing:.08em;text-transform:uppercase}
+  .part-group{border-bottom:0.5px solid var(--color-border-tertiary)}
+  .part-title{padding:.6rem 1rem;font-size:11px;font-weight:500;color:var(--color-text-tertiary);letter-spacing:.06em;text-transform:uppercase;background:var(--color-background-secondary)}
+  .lesson-btn{display:block;width:100%;text-align:left;padding:.5rem 1rem;font-size:13px;color:var(--color-text-secondary);background:none;border:none;cursor:pointer;line-height:1.4;border-left:2px solid transparent;transition:all .15s}
+  .lesson-btn:hover{color:var(--color-text-primary);background:var(--color-background-secondary)}
+  .lesson-btn.active{color:var(--color-text-primary);background:var(--color-background-secondary);border-left-color:#7F77DD;font-weight:500}
+  #main{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+  #topbar{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.5rem;border-bottom:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary);flex-shrink:0}
+  #lesson-title{font-size:15px;font-weight:500;color:var(--color-text-primary)}
+  #lesson-meta{font-size:12px;color:var(--color-text-tertiary)}
+  #content{padding:1.5rem;flex:1;max-width:720px}
+  .section-label{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-tertiary);margin-bottom:.5rem;display:flex;align-items:center;gap:6px}
+  .section-label i{font-size:14px}
+  .script-box{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.25rem 1.5rem;margin-bottom:1.5rem;line-height:1.8;font-family:var(--font-sans,'Georgia',serif);font-size:15px;color:var(--color-text-primary)}
+  .script-box .intro{color:var(--color-text-secondary);font-size:13px;border-bottom:0.5px solid var(--color-border-tertiary);padding-bottom:.75rem;margin-bottom:.75rem}
+  .script-box p{margin-bottom:.75rem}
+  .script-box p:last-child{margin-bottom:0}
+  .highlight{background:#EEEDFE;color:#3C3489;padding:1px 4px;border-radius:3px;font-family:var(--font-mono,'Courier New',monospace);font-size:14px}
+  @media (prefers-color-scheme:dark){.highlight{background:#26215C;color:#AFA9EC}}
+  .code-block{background:#1e1e2e;border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:1.5rem;border:0.5px solid #313145}
+  .code-header{display:flex;align-items:center;justify-content:space-between;padding:.5rem 1rem;background:#16162a;border-bottom:0.5px solid #313145}
+  .code-lang{font-size:11px;font-weight:500;color:#7F77DD;letter-spacing:.06em;text-transform:uppercase}
+  .copy-btn{font-size:11px;color:#888;background:none;border:0.5px solid #444;border-radius:4px;padding:3px 8px;cursor:pointer;font-family:inherit;transition:all .15s}
+  .copy-btn:hover{color:#ccc;border-color:#666}
+  .copy-btn.copied{color:#5DCAA5;border-color:#5DCAA5}
+  pre{padding:1rem;overflow-x:auto;font-size:13px;line-height:1.6;color:#cdd6f4;font-family:'Courier New',Courier,monospace}
+  .kw{color:#cba6f7} .tag{color:#89b4fa} .attr{color:#a6e3a1} .str{color:#f9e2af} .cm{color:#6c7086;font-style:italic} .sel{color:#89dceb} .prop{color:#cba6f7} .val{color:#f9e2af} .num{color:#fab387}
+  .nav-btns{display:flex;gap:8px;margin-top:1.5rem}
+  .nav-btn{flex:1;padding:.6rem 1rem;font-size:13px;background:none;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);cursor:pointer;color:var(--color-text-secondary);font-family:var(--font-sans);transition:all .15s}
+  .nav-btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+  .nav-btn:disabled{opacity:.3;cursor:not-allowed}
+  .tip-box{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-left:3px solid #7F77DD;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;padding:.75rem 1rem;margin-bottom:1.5rem;font-size:13px;color:var(--color-text-secondary);line-height:1.6}
+  .tip-box strong{color:var(--color-text-primary);font-weight:500}
+</style>
+
+<h2 class="sr-only">Script interactif pour mini-tutoriels HTML/CSS — naviguez par partie et leçon pour lire le script et copier les extraits de code.</h2>
+<div id="app">
+  <div id="sidebar">
+    <div id="sidebar-header"><h1><i class="ti ti-video" aria-hidden="true"></i> Script Vidéo</h1></div>
+    <div id="nav-tree"></div>
+  </div>
+  <div id="main">
+    <div id="topbar">
+      <span id="lesson-title">Sélectionnez une leçon</span>
+      <span id="lesson-meta"></span>
+    </div>
+    <div id="content"></div>
+  </div>
+</div>
+
+<script>
+const lessons = [
+  {part:"Partie 1 — Bases HTML5",lessons:[
+    {title:"Créez votre première page HTML",meta:"~3 min",
+     intro:"Ouvrir l'éditeur de code (VS Code recommandé) et créer un fichier index.html.",
+     script:[
+       "Bienvenue dans ce premier tutoriel ! Aujourd'hui, on va créer ensemble notre toute première page web en HTML.",
+       "HTML, c'est le squelette de chaque page web que vous visitez. Chaque navigateur sait lire ce langage et l'afficher à l'écran.",
+       "Tout fichier HTML commence par une déclaration de type de document : <span class='highlight'>&lt;!DOCTYPE html&gt;</span>. Ça indique au navigateur qu'il s'agit bien d'un document HTML5.",
+       "Ensuite, on ouvre la balise racine <span class='highlight'>&lt;html&gt;</span>, puis le <span class='highlight'>&lt;head&gt;</span> pour les métadonnées, et le <span class='highlight'>&lt;body&gt;</span> pour tout ce qui sera visible. Je vous recopie le squelette complet ci-dessous."
+     ],
+     tip:"💡 Conseil à dire à l'écran : « Recopiez ce squelette par cœur — vous l'utiliserez dans chaque projet ! »",
+     code:{lang:"html",code:`<span class="cm">&lt;!-- Structure de base HTML5 --&gt;</span>
+<span class="kw">&lt;!DOCTYPE html&gt;</span>
+<span class="tag">&lt;html</span> <span class="attr">lang</span>=<span class="str">"fr"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;head&gt;</span>
+  <span class="tag">&lt;meta</span> <span class="attr">charset</span>=<span class="str">"UTF-8"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;meta</span> <span class="attr">name</span>=<span class="str">"viewport"</span> <span class="attr">content</span>=<span class="str">"width=device-width"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;title&gt;</span>Ma première page<span class="tag">&lt;/title&gt;</span>
+<span class="tag">&lt;/head&gt;</span>
+<span class="tag">&lt;body&gt;</span>
+  <span class="tag">&lt;h1&gt;</span>Bonjour le monde !<span class="tag">&lt;/h1&gt;</span>
+  <span class="tag">&lt;p&gt;</span>Ma toute première page web.<span class="tag">&lt;/p&gt;</span>
+<span class="tag">&lt;/body&gt;</span>
+<span class="tag">&lt;/html&gt;</span>`}},
+
+    {title:"Différence entre HTML et CSS",meta:"~2 min",
+     intro:"Montrer un exemple concret côte à côte : HTML seul, puis avec CSS.",
+     script:[
+       "Une question revient souvent chez les débutants : quelle est la différence entre HTML et CSS ?",
+       "HTML, c'est la structure. C'est comme la charpente d'une maison : les murs, les portes, les fenêtres. On définit CE QU'IL Y A sur la page.",
+       "CSS, c'est la décoration. C'est la peinture, le mobilier, les rideaux. On définit COMMENT ça s'affiche : les couleurs, les tailles, les positions.",
+       "Regardez ce code : à gauche, le HTML brut. À droite, le même HTML auquel on a lié un fichier CSS. Même contenu, apparence radicalement différente."
+     ],
+     tip:"💡 Astuce de tournage : affichez les deux fichiers en split-screen dans votre éditeur.",
+     code:{lang:"html",code:`<span class="cm">&lt;!-- HTML : la STRUCTURE --&gt;</span>
+<span class="tag">&lt;h1&gt;</span>Mon titre<span class="tag">&lt;/h1&gt;</span>
+<span class="tag">&lt;p&gt;</span>Mon paragraphe.<span class="tag">&lt;/p&gt;</span>
+<span class="tag">&lt;button&gt;</span>Cliquez ici<span class="tag">&lt;/button&gt;</span>
+
+<span class="cm">&lt;!-- CSS : la MISE EN FORME (dans style.css) --&gt;</span>
+<span class="sel">h1</span> {
+  <span class="prop">color</span>: <span class="val">#7F77DD</span>;
+  <span class="prop">font-size</span>: <span class="val">2rem</span>;
+}
+<span class="sel">button</span> {
+  <span class="prop">background</span>: <span class="val">#7F77DD</span>;
+  <span class="prop">color</span>: <span class="val">white</span>;
+  <span class="prop">padding</span>: <span class="val">8px 16px</span>;
+  <span class="prop">border-radius</span>: <span class="val">6px</span>;
+}`}},
+
+    {title:"Organiser le texte : titres et paragraphes",meta:"~3 min",
+     intro:"Ouvrir index.html et taper le code en direct.",
+     script:[
+       "Pour organiser le texte d'une page, HTML nous offre six niveaux de titres : de h1 à h6. H1 est le plus important, h6 le moins important.",
+       "La règle d'or : une seule balise <span class='highlight'>&lt;h1&gt;</span> par page ! C'est crucial pour le référencement Google et l'accessibilité.",
+       "Les paragraphes se balises avec <span class='highlight'>&lt;p&gt;</span>. Chaque paragraphe est séparé automatiquement par de l'espace.",
+       "Pour les listes, on a <span class='highlight'>&lt;ul&gt;</span> pour les listes à puces, et <span class='highlight'>&lt;ol&gt;</span> pour les listes numérotées. Dans les deux cas, chaque élément s'entoure de la balise <span class='highlight'>&lt;li&gt;</span>."
+     ],
+     tip:"💡 À dire : « Tapez ce code avec moi, lettre par lettre — c'est comme ça qu'on mémorise ! »",
+     code:{lang:"html",code:`<span class="cm">&lt;!-- Les 6 niveaux de titres --&gt;</span>
+<span class="tag">&lt;h1&gt;</span>Titre principal (unique !)<span class="tag">&lt;/h1&gt;</span>
+<span class="tag">&lt;h2&gt;</span>Sous-section<span class="tag">&lt;/h2&gt;</span>
+<span class="tag">&lt;h3&gt;</span>Sous-sous-section<span class="tag">&lt;/h3&gt;</span>
+
+<span class="cm">&lt;!-- Paragraphes --&gt;</span>
+<span class="tag">&lt;p&gt;</span>Un paragraphe de texte normal.<span class="tag">&lt;/p&gt;</span>
+
+<span class="cm">&lt;!-- Liste à puces --&gt;</span>
+<span class="tag">&lt;ul&gt;</span>
+  <span class="tag">&lt;li&gt;</span>Pommes<span class="tag">&lt;/li&gt;</span>
+  <span class="tag">&lt;li&gt;</span>Bananes<span class="tag">&lt;/li&gt;</span>
+<span class="tag">&lt;/ul&gt;</span>
+
+<span class="cm">&lt;!-- Liste numérotée --&gt;</span>
+<span class="tag">&lt;ol&gt;</span>
+  <span class="tag">&lt;li&gt;</span>Première étape<span class="tag">&lt;/li&gt;</span>
+  <span class="tag">&lt;li&gt;</span>Deuxième étape<span class="tag">&lt;/li&gt;</span>
+<span class="tag">&lt;/ol&gt;</span>`}},
+
+    {title:"Liens hypertextes et images",meta:"~3 min",
+     intro:"Montrer comment créer des liens internes et externes, puis insérer une image.",
+     script:[
+       "Les liens, c'est l'ADN du web ! La balise <span class='highlight'>&lt;a&gt;</span>, pour 'anchor', permet de naviguer d'une page à l'autre.",
+       "L'attribut <span class='highlight'>href</span> contient la destination. Pour un lien externe, on met l'URL complète avec https://. Pour un lien interne, on met juste le nom du fichier.",
+       "L'attribut <span class='highlight'>target=\"_blank\"</span> ouvre le lien dans un nouvel onglet. Utile pour les liens vers des sites externes !",
+       "Pour les images, on utilise <span class='highlight'>&lt;img&gt;</span>. C'est une balise auto-fermante — pas de balise fermante séparée. L'attribut <span class='highlight'>alt</span> est obligatoire : il décrit l'image pour les personnes malvoyantes et les moteurs de recherche."
+     ],
+     tip:"💡 Bonnes pratiques à rappeler : toujours renseigner l'attribut alt sur les images !",
+     code:{lang:"html",code:`<span class="cm">&lt;!-- Lien externe --&gt;</span>
+<span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="str">"https://www.google.fr"</span>
+   <span class="attr">target</span>=<span class="str">"_blank"</span><span class="tag">&gt;</span>
+  Visiter Google
+<span class="tag">&lt;/a&gt;</span>
+
+<span class="cm">&lt;!-- Lien interne (même dossier) --&gt;</span>
+<span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="str">"contact.html"</span><span class="tag">&gt;</span>
+  Nous contacter
+<span class="tag">&lt;/a&gt;</span>
+
+<span class="cm">&lt;!-- Image avec texte alternatif --&gt;</span>
+<span class="tag">&lt;img</span>
+  <span class="attr">src</span>=<span class="str">"images/photo.jpg"</span>
+  <span class="attr">alt</span>=<span class="str">"Paysage de montagne au coucher du soleil"</span>
+  <span class="attr">width</span>=<span class="str">"600"</span>
+<span class="tag">&gt;</span>`}},
+  ]},
+
+  {part:"Partie 2 — Mettre en forme avec CSS3",lessons:[
+    {title:"Intégrer le CSS dans la page HTML",meta:"~2 min",
+     intro:"Montrer les 3 méthodes : inline, balise style, fichier externe.",
+     script:[
+       "Il existe trois façons d'ajouter du CSS à une page HTML. Je vais vous les présenter, mais dès le départ retenez la règle : une seule est vraiment recommandée en production.",
+       "Méthode 1 : le CSS inline, directement dans l'attribut <span class='highlight'>style</span> de la balise. Pratique pour tester, mais à éviter absolument dans un vrai projet.",
+       "Méthode 2 : la balise <span class='highlight'>&lt;style&gt;</span> dans le head. Mieux, mais le CSS reste mélangé au HTML.",
+       "Méthode 3 : le fichier CSS externe, lié avec <span class='highlight'>&lt;link rel=\"stylesheet\"&gt;</span>. C'est la bonne pratique professionnelle. Un fichier HTML propre, un fichier CSS séparé, et on peut réutiliser le même style sur toutes les pages du site."
+     ],
+     tip:"💡 Ouvrez style.css dans un onglet séparé de l'éditeur pendant que vous modifiez index.html.",
+     code:{lang:"html",code:`<span class="cm">&lt;!-- ❌ Méthode 1 : inline (à éviter) --&gt;</span>
+<span class="tag">&lt;p</span> <span class="attr">style</span>=<span class="str">"color: red;"</span><span class="tag">&gt;</span>Texte rouge<span class="tag">&lt;/p&gt;</span>
+
+<span class="cm">&lt;!-- ⚠️ Méthode 2 : balise style --&gt;</span>
+<span class="tag">&lt;style&gt;</span>
+  <span class="sel">p</span> { <span class="prop">color</span>: <span class="val">blue</span>; }
+<span class="tag">&lt;/style&gt;</span>
+
+<span class="cm">&lt;!-- ✅ Méthode 3 : fichier externe (recommandée) --&gt;</span>
+<span class="tag">&lt;head&gt;</span>
+  <span class="tag">&lt;link</span>
+    <span class="attr">rel</span>=<span class="str">"stylesheet"</span>
+    <span class="attr">href</span>=<span class="str">"style.css"</span>
+  <span class="tag">&gt;</span>
+<span class="tag">&lt;/head&gt;</span>`}},
+
+    {title:"Couleurs, texte et typographie",meta:"~4 min",
+     intro:"Créer style.css et typer les propriétés typographiques en direct.",
+     script:[
+       "On entre dans le vif du sujet : la typographie. C'est souvent la première chose qu'on veut personnaliser sur une page.",
+       "La propriété <span class='highlight'>color</span> change la couleur du texte. On peut utiliser un nom de couleur, un code hexadécimal, ou une valeur RGB.",
+       "Pour la police, <span class='highlight'>font-family</span> accepte une liste de polices. On en met plusieurs en cas de secours — si la première n'est pas disponible, le navigateur passe à la suivante.",
+       "Google Fonts est votre meilleur ami pour les polices gratuites. Il suffit de coller le lien dans le head, puis d'utiliser le nom de la police en CSS.",
+       "Pensez aussi à <span class='highlight'>font-size</span>, <span class='highlight'>font-weight</span> pour le gras, et <span class='highlight'>line-height</span> pour l'interlignage — indispensable pour la lisibilité !"
+     ],
+     tip:"💡 À montrer : changez la couleur en live avec les DevTools du navigateur (F12).",
+     code:{lang:"html",code:`<span class="cm">/* Dans style.css */</span>
+
+<span class="cm">/* Import d'une police Google Fonts */</span>
+<span class="kw">@import</span> <span class="val">url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap')</span>;
+
+<span class="sel">body</span> {
+  <span class="prop">font-family</span>: <span class="val">'Poppins', sans-serif</span>;
+  <span class="prop">font-size</span>: <span class="val">16px</span>;
+  <span class="prop">line-height</span>: <span class="val">1.6</span>;
+  <span class="prop">color</span>: <span class="val">#333333</span>;
+}
+
+<span class="sel">h1</span> {
+  <span class="prop">font-size</span>: <span class="val">2.5rem</span>;
+  <span class="prop">font-weight</span>: <span class="val">600</span>;
+  <span class="prop">color</span>: <span class="val">#7F77DD</span>;
+  <span class="prop">text-align</span>: <span class="val">center</span>;
+}
+
+<span class="sel">p</span> {
+  <span class="prop">color</span>: <span class="val">rgb(80, 80, 80)</span>;
+  <span class="prop">margin-bottom</span>: <span class="val">1rem</span>;
+}`}},
+
+    {title:"Couleurs, fonds et bordures",meta:"~3 min",
+     intro:"Styler une carte avec fond, bordure et ombre.",
+     script:[
+       "Passons aux couleurs de fond et aux bordures. Ces propriétés transforment complètement l'aspect d'une page.",
+       "<span class='highlight'>background-color</span> colore le fond d'un élément. <span class='highlight'>background-image</span> permet d'utiliser une image ou même un dégradé !",
+       "La propriété <span class='highlight'>border</span> est un raccourci magique : en une ligne, on définit l'épaisseur, le style et la couleur.",
+       "Et <span class='highlight'>border-radius</span>, c'est la propriété qui arrondit les coins. Avec 50%, vous obtenez un cercle parfait !",
+       "Enfin, <span class='highlight'>box-shadow</span> pour les ombres. La syntaxe : décalage horizontal, décalage vertical, flou, et couleur."
+     ],
+     tip:"💡 Astuce : utilisez des couleurs semi-transparentes avec rgba() pour les ombres.",
+     code:{lang:"html",code:`<span class="cm">/* Fonds et dégradés */</span>
+<span class="sel">.carte</span> {
+  <span class="prop">background-color</span>: <span class="val">#ffffff</span>;
+  <span class="prop">background-image</span>: <span class="val">linear-gradient(135deg, #667eea, #764ba2)</span>;
+  <span class="prop">padding</span>: <span class="val">2rem</span>;
+}
+
+<span class="cm">/* Bordures */</span>
+<span class="sel">.encadre</span> {
+  <span class="prop">border</span>: <span class="val">2px solid #7F77DD</span>;
+  <span class="prop">border-radius</span>: <span class="val">12px</span>;
+}
+
+<span class="cm">/* Ombre portée */</span>
+<span class="sel">.ombre</span> {
+  <span class="prop">box-shadow</span>: <span class="val">0 4px 20px rgba(0, 0, 0, 0.15)</span>;
+}
+
+<span class="cm">/* Cercle */</span>
+<span class="sel">.avatar</span> {
+  <span class="prop">width</span>: <span class="val">60px</span>;
+  <span class="prop">height</span>: <span class="val">60px</span>;
+  <span class="prop">border-radius</span>: <span class="val">50%</span>;
+}`}},
+
+    {title:"Pseudo-classes et effets dynamiques",meta:"~3 min",
+     intro:"Montrer les effets hover et focus en direct dans le navigateur.",
+     script:[
+       "Les pseudo-classes, c'est ce qui rend vos pages vivantes ! Elles s'appliquent selon l'état d'un élément.",
+       "La plus utilisée : <span class='highlight'>:hover</span>. Elle s'active quand la souris passe sur l'élément. Parfaite pour les boutons et les liens !",
+       "<span class='highlight'>:focus</span> s'active quand un champ de formulaire est sélectionné — indispensable pour l'accessibilité.",
+       "Et pour rendre les transitions douces, on utilise la propriété <span class='highlight'>transition</span>. Elle anime automatiquement le passage d'un état à l'autre.",
+       "Regardez la différence : sans transition, le changement est brutal. Avec, c'est fluide et professionnel."
+     ],
+     tip:"💡 À montrer en direct : inspecter l'élément dans les DevTools et cocher/décocher :hover.",
+     code:{lang:"html",code:`<span class="cm">/* Effets au survol */</span>
+<span class="sel">a</span> {
+  <span class="prop">color</span>: <span class="val">#7F77DD</span>;
+  <span class="prop">text-decoration</span>: <span class="val">none</span>;
+  <span class="prop">transition</span>: <span class="val">color 0.2s ease</span>;
+}
+
+<span class="sel">a:hover</span> {
+  <span class="prop">color</span>: <span class="val">#534AB7</span>;
+  <span class="prop">text-decoration</span>: <span class="val">underline</span>;
+}
+
+<span class="cm">/* Bouton interactif */</span>
+<span class="sel">.btn</span> {
+  <span class="prop">background</span>: <span class="val">#7F77DD</span>;
+  <span class="prop">color</span>: <span class="val">white</span>;
+  <span class="prop">padding</span>: <span class="val">10px 24px</span>;
+  <span class="prop">border-radius</span>: <span class="val">8px</span>;
+  <span class="prop">border</span>: <span class="val">none</span>;
+  <span class="prop">cursor</span>: <span class="val">pointer</span>;
+  <span class="prop">transition</span>: <span class="val">all 0.2s ease</span>;
+}
+
+<span class="sel">.btn:hover</span> {
+  <span class="prop">background</span>: <span class="val">#534AB7</span>;
+  <span class="prop">transform</span>: <span class="val">translateY(-2px)</span>;
+  <span class="prop">box-shadow</span>: <span class="val">0 6px 16px rgba(127,119,221,0.4)</span>;
+}
+
+<span class="sel">input:focus</span> {
+  <span class="prop">outline</span>: <span class="val">2px solid #7F77DD</span>;
+  <span class="prop">border-color</span>: <span class="val">#7F77DD</span>;
+}`}},
+  ]},
+
+  {part:"Partie 3 — Agencer le contenu",lessons:[
+    {title:"Le box model : marges et padding",meta:"~4 min",
+     intro:"Dessiner le box model au tableau ou via un schéma à l'écran.",
+     script:[
+       "Le box model, c'est probablement le concept le plus important en CSS. Comprendre ça, c'est comprendre comment le navigateur place chaque élément.",
+       "Chaque élément HTML est une boîte composée de quatre couches, de l'intérieur vers l'extérieur : le contenu, le padding, la bordure, et la marge.",
+       "<span class='highlight'>padding</span> : l'espace entre le contenu et la bordure. C'est l'espace intérieur.",
+       "<span class='highlight'>margin</span> : l'espace entre la bordure et les éléments voisins. C'est l'espace extérieur.",
+       "Par défaut, width ne compte que le contenu. Avec <span class='highlight'>box-sizing: border-box</span>, la largeur inclut padding et bordure — ce qui est beaucoup plus intuitif. Appliquez-le à tout en utilisant le sélecteur universel *."
+     ],
+     tip:"💡 Montrer les DevTools : onglet 'Computed' → le schéma box model interactif.",
+     code:{lang:"html",code:`<span class="cm">/* Appliquer box-sizing globalement — toujours ! */</span>
+<span class="sel">*</span> {
+  <span class="prop">box-sizing</span>: <span class="val">border-box</span>;
+  <span class="prop">margin</span>: <span class="val">0</span>;
+  <span class="prop">padding</span>: <span class="val">0</span>;
+}
+
+<span class="sel">.carte</span> {
+  <span class="prop">width</span>: <span class="val">300px</span>;
+
+  <span class="cm">/* Espace intérieur (4 côtés) */</span>
+  <span class="prop">padding</span>: <span class="val">24px</span>;
+
+  <span class="cm">/* Raccourcis : haut/bas puis gauche/droite */</span>
+  <span class="prop">padding</span>: <span class="val">16px 24px</span>;
+
+  <span class="cm">/* Espace extérieur */</span>
+  <span class="prop">margin</span>: <span class="val">0 auto</span>; <span class="cm">/* centrage horizontal !</span>
+
+  <span class="prop">border</span>: <span class="val">1px solid #ccc</span>;
+  <span class="prop">border-radius</span>: <span class="val">12px</span>;
+}`}},
+
+    {title:"Mise en page avec Flexbox",meta:"~5 min",
+     intro:"Créer une barre de navigation et une grille de cartes avec Flexbox.",
+     script:[
+       "Flexbox, c'est la révolution de la mise en page CSS. Avant Flexbox, centrer un élément verticalement était un cauchemar. Maintenant, c'est trois lignes.",
+       "On active Flexbox sur le conteneur parent avec <span class='highlight'>display: flex</span>. Les enfants directs deviennent automatiquement des 'flex items'.",
+       "<span class='highlight'>justify-content</span> contrôle la disposition sur l'axe principal — horizontalement par défaut. La valeur <span class='highlight'>space-between</span> répartit les éléments avec de l'espace entre eux.",
+       "<span class='highlight'>align-items</span> contrôle l'alignement sur l'axe secondaire — verticalement par défaut.",
+       "Et pour centrer parfaitement un élément dans son conteneur : <span class='highlight'>justify-content: center</span> et <span class='highlight'>align-items: center</span>. Magique !"
+     ],
+     tip:"💡 Outil à recommander : Flexbox Froggy (flexboxfroggy.com) pour s'entraîner de façon ludique.",
+     code:{lang:"html",code:`<span class="cm">/* Centrage parfait avec Flexbox */</span>
+<span class="sel">.hero</span> {
+  <span class="prop">display</span>: <span class="val">flex</span>;
+  <span class="prop">justify-content</span>: <span class="val">center</span>;
+  <span class="prop">align-items</span>: <span class="val">center</span>;
+  <span class="prop">height</span>: <span class="val">100vh</span>;
+}
+
+<span class="cm">/* Barre de navigation */</span>
+<span class="sel">nav</span> {
+  <span class="prop">display</span>: <span class="val">flex</span>;
+  <span class="prop">justify-content</span>: <span class="val">space-between</span>;
+  <span class="prop">align-items</span>: <span class="val">center</span>;
+  <span class="prop">padding</span>: <span class="val">1rem 2rem</span>;
+}
+
+<span class="cm">/* Grille de cartes responsives */</span>
+<span class="sel">.grille</span> {
+  <span class="prop">display</span>: <span class="val">flex</span>;
+  <span class="prop">flex-wrap</span>: <span class="val">wrap</span>;
+  <span class="prop">gap</span>: <span class="val">1.5rem</span>;
+}
+
+<span class="sel">.grille .carte</span> {
+  <span class="prop">flex</span>: <span class="val">1 1 280px</span>; <span class="cm">/* min 280px, grandit si possible */</span>
+}`}},
+
+    {title:"Introduction à CSS Grid",meta:"~4 min",
+     intro:"Recréer une mise en page avec en-tête, sidebar, contenu et pied de page.",
+     script:[
+       "Si Flexbox est parfait pour les composants en une dimension, CSS Grid excelle pour les mises en page en deux dimensions : lignes ET colonnes simultanément.",
+       "On active Grid avec <span class='highlight'>display: grid</span>. Ensuite, on définit les colonnes avec <span class='highlight'>grid-template-columns</span>.",
+       "La valeur <span class='highlight'>1fr</span> signifie 'une fraction de l'espace disponible'. Avec <span class='highlight'>repeat(3, 1fr)</span>, on crée trois colonnes égales.",
+       "La propriété <span class='highlight'>gap</span> crée de l'espace entre toutes les cellules — beaucoup plus pratique que les marges !",
+       "Et pour positionner un élément sur plusieurs colonnes ou lignes : <span class='highlight'>grid-column: 1 / 3</span> s'étend de la colonne 1 à la colonne 3."
+     ],
+     tip:"💡 Outil : Grid Garden (cssgridgarden.com). Et Firefox DevTools a le meilleur inspecteur Grid !",
+     code:{lang:"html",code:`<span class="cm">/* Mise en page classique avec Grid */</span>
+<span class="sel">.page</span> {
+  <span class="prop">display</span>: <span class="val">grid</span>;
+  <span class="prop">grid-template-columns</span>: <span class="val">250px 1fr</span>;
+  <span class="prop">grid-template-rows</span>: <span class="val">auto 1fr auto</span>;
+  <span class="prop">min-height</span>: <span class="val">100vh</span>;
+  <span class="prop">gap</span>: <span class="val">0</span>;
+}
+
+<span class="sel">header</span> {
+  <span class="prop">grid-column</span>: <span class="val">1 / -1</span>; <span class="cm">/* s'étend sur toutes les colonnes */</span>
+}
+
+<span class="sel">footer</span> {
+  <span class="prop">grid-column</span>: <span class="val">1 / -1</span>;
+}
+
+<span class="cm">/* Grille de 3 colonnes responsives */</span>
+<span class="sel">.articles</span> {
+  <span class="prop">display</span>: <span class="val">grid</span>;
+  <span class="prop">grid-template-columns</span>: <span class="val">repeat(auto-fit, minmax(280px, 1fr))</span>;
+  <span class="prop">gap</span>: <span class="val">1.5rem</span>;
+  <span class="prop">padding</span>: <span class="val">2rem</span>;
+}`}},
+  ]},
+
+  {part:"Partie 4 — Fonctionnalités avancées",lessons:[
+    {title:"Formulaires HTML complets",meta:"~5 min",
+     intro:"Créer un formulaire de contact de A à Z.",
+     script:[
+       "Les formulaires, c'est le moyen pour vos visiteurs de communiquer avec vous : inscription, contact, commande...",
+       "La balise <span class='highlight'>&lt;form&gt;</span> enveloppe tout le formulaire. L'attribut <span class='highlight'>action</span> indique où envoyer les données, et <span class='highlight'>method</span> définit comment : GET ou POST.",
+       "Chaque champ est un <span class='highlight'>&lt;input&gt;</span> avec un attribut <span class='highlight'>type</span>. Il y en a beaucoup : text, email, password, checkbox, radio, file...",
+       "Associez toujours un <span class='highlight'>&lt;label&gt;</span> à chaque champ via l'attribut <span class='highlight'>for</span> qui correspond à l'id de l'input. C'est essentiel pour l'accessibilité.",
+       "Pour les grands textes, utilisez <span class='highlight'>&lt;textarea&gt;</span>. Et n'oubliez pas le bouton <span class='highlight'>&lt;button type=\"submit\"&gt;</span> pour envoyer !"
+     ],
+     tip:"💡 HTML5 gère déjà la validation basique avec les attributs required, type='email', minlength, etc.",
+     code:{lang:"html",code:`<span class="tag">&lt;form</span> <span class="attr">action</span>=<span class="str">"/contact"</span> <span class="attr">method</span>=<span class="str">"POST"</span><span class="tag">&gt;</span>
+
+  <span class="cm">&lt;!-- Champ texte --&gt;</span>
+  <span class="tag">&lt;label</span> <span class="attr">for</span>=<span class="str">"nom"</span><span class="tag">&gt;</span>Votre nom<span class="tag">&lt;/label&gt;</span>
+  <span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="str">"text"</span> <span class="attr">id</span>=<span class="str">"nom"</span>
+         <span class="attr">name</span>=<span class="str">"nom"</span> <span class="attr">required</span><span class="tag">&gt;</span>
+
+  <span class="cm">&lt;!-- Email (validé automatiquement) --&gt;</span>
+  <span class="tag">&lt;label</span> <span class="attr">for</span>=<span class="str">"email"</span><span class="tag">&gt;</span>Email<span class="tag">&lt;/label&gt;</span>
+  <span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="str">"email"</span> <span class="attr">id</span>=<span class="str">"email"</span>
+         <span class="attr">name</span>=<span class="str">"email"</span> <span class="attr">required</span><span class="tag">&gt;</span>
+
+  <span class="cm">&lt;!-- Zone de texte --&gt;</span>
+  <span class="tag">&lt;label</span> <span class="attr">for</span>=<span class="str">"message"</span><span class="tag">&gt;</span>Message<span class="tag">&lt;/label&gt;</span>
+  <span class="tag">&lt;textarea</span> <span class="attr">id</span>=<span class="str">"message"</span> <span class="attr">name</span>=<span class="str">"message"</span>
+             <span class="attr">rows</span>=<span class="str">"5"</span> <span class="attr">required</span><span class="tag">&gt;&lt;/textarea&gt;</span>
+
+  <span class="tag">&lt;button</span> <span class="attr">type</span>=<span class="str">"submit"</span><span class="tag">&gt;</span>Envoyer<span class="tag">&lt;/button&gt;</span>
+
+<span class="tag">&lt;/form&gt;</span>`}},
+
+    {title:"Responsive design avec Media Queries",meta:"~4 min",
+     intro:"Adapter la grille de cartes pour mobile, tablette et desktop.",
+     script:[
+       "Aujourd'hui, plus de 60% des visites web se font sur mobile. Il est donc indispensable que nos pages s'adaptent à toutes les tailles d'écran.",
+       "Le responsive design repose sur trois piliers : des mises en page fluides, des images flexibles, et les Media Queries CSS.",
+       "Une Media Query s'écrit avec <span class='highlight'>@media</span> suivi d'une condition sur la largeur de l'écran. À l'intérieur, on réécrit les règles CSS qui doivent changer.",
+       "L'approche recommandée est le 'mobile first' : on code d'abord pour les petits écrans, puis on ajoute des Media Queries pour les agrandir progressivement.",
+       "Les points de rupture classiques : 768px pour tablette, 1024px pour desktop. Mais adaptez-les à votre contenu, pas à des appareils spécifiques !"
+     ],
+     tip:"💡 À montrer : le mode responsive des DevTools (Ctrl+Shift+M) pour simuler différents écrans.",
+     code:{lang:"html",code:`<span class="cm">/* Mobile first : style de base pour mobile */</span>
+<span class="sel">.grille</span> {
+  <span class="prop">display</span>: <span class="val">grid</span>;
+  <span class="prop">grid-template-columns</span>: <span class="val">1fr</span>; <span class="cm">/* 1 colonne */</span>
+  <span class="prop">gap</span>: <span class="val">1rem</span>;
+  <span class="prop">padding</span>: <span class="val">1rem</span>;
+}
+
+<span class="cm">/* Tablette (≥ 768px) */</span>
+<span class="kw">@media</span> (min-width: <span class="num">768px</span>) {
+  <span class="sel">.grille</span> {
+    <span class="prop">grid-template-columns</span>: <span class="val">repeat(2, 1fr)</span>;
+    <span class="prop">padding</span>: <span class="val">1.5rem</span>;
+  }
+  <span class="sel">nav</span> {
+    <span class="prop">display</span>: <span class="val">flex</span>;
+  }
+}
+
+<span class="cm">/* Desktop (≥ 1024px) */</span>
+<span class="kw">@media</span> (min-width: <span class="num">1024px</span>) {
+  <span class="sel">.grille</span> {
+    <span class="prop">grid-template-columns</span>: <span class="val">repeat(3, 1fr)</span>;
+    <span class="prop">padding</span>: <span class="val">2rem</span>;
+  }
+}`}},
+  ]},
+];
+
+let currentPart = 0, currentLesson = 0;
+
+function renderNav(){
+  const tree = document.getElementById('nav-tree');
+  tree.innerHTML = '';
+  lessons.forEach((part,pi)=>{
+    const g = document.createElement('div');
+    g.className='part-group';
+    g.innerHTML=`<div class="part-title">Partie ${pi+1}</div>`;
+    part.lessons.forEach((l,li)=>{
+      const b=document.createElement('button');
+      b.className='lesson-btn'+(pi===currentPart&&li===currentLesson?' active':'');
+      b.textContent=l.title;
+      b.onclick=()=>{currentPart=pi;currentLesson=li;renderNav();renderContent()};
+      g.appendChild(b);
+    });
+    tree.appendChild(g);
+  });
+}
+
+function copyCode(btn, text){
+  const clean = text.replace(/<[^>]+>/g,'');
+  navigator.clipboard.writeText(clean).then(()=>{
+    btn.textContent='✓ Copié !';
+    btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='Copier';btn.classList.remove('copied')},2000);
+  });
+}
+
+function renderContent(){
+  const l=lessons[currentPart].lessons[currentLesson];
+  document.getElementById('lesson-title').textContent=l.title;
+  document.getElementById('lesson-meta').textContent=`Partie ${currentPart+1} · ${l.meta}`;
+  
+  const total = lessons.reduce((a,p)=>a+p.lessons.length,0);
+  let idx=0;
+  for(let i=0;i<currentPart;i++) idx+=lessons[i].lessons.length;
+  idx+=currentLesson;
+
+  const prevEnabled = idx>0;
+  const nextEnabled = idx<total-1;
+
+  document.getElementById('content').innerHTML=`
+    <div class="section-label"><i class="ti ti-message-circle" aria-hidden="true"></i> Script à dire</div>
+    <div class="script-box">
+      <div class="intro"><i class="ti ti-video" aria-hidden="true"></i> Prép. : ${l.intro}</div>
+      ${l.script.map(p=>`<p>${p}</p>`).join('')}
+    </div>
+    <div class="tip-box">${l.tip}</div>
+    <div class="section-label"><i class="ti ti-code" aria-hidden="true"></i> Code à afficher / recopier</div>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">${l.code.lang}</span>
+        <button class="copy-btn" onclick="copyCode(this,'${encodeURIComponent(l.code.code)}')">Copier</button>
+      </div>
+      <pre>${l.code.code}</pre>
+    </div>
+    <div class="nav-btns">
+      <button class="nav-btn" ${prevEnabled?'':'disabled'} onclick="navigate(-1)">← Précédent</button>
+      <button class="nav-btn" ${nextEnabled?'':'disabled'} onclick="navigate(1)">Suivant →</button>
+    </div>
+  `;
+
+  document.querySelectorAll('.copy-btn').forEach(btn=>{
+    btn.onclick=function(){
+      const pre=this.closest('.code-block').querySelector('pre');
+      const clean=pre.innerText;
+      navigator.clipboard.writeText(clean).then(()=>{
+        this.textContent='✓ Copié !';
+        this.classList.add('copied');
+        setTimeout(()=>{this.textContent='Copier';this.classList.remove('copied')},2000);
+      });
+    };
+  });
+}
+
+window.navigate=function(dir){
+  const flat=[];
+  lessons.forEach((p,pi)=>p.lessons.forEach((_,li)=>flat.push([pi,li])));
+  let idx=flat.findIndex(([pi,li])=>pi===currentPart&&li===currentLesson);
+  idx+=dir;
+  if(idx>=0&&idx<flat.length){[currentPart,currentLesson]=flat[idx];renderNav();renderContent()}
+};
+
+renderNav();
+renderContent();
+</script>
