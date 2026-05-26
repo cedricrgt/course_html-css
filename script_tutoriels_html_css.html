@@ -154,90 +154,72 @@
     .nav-btn:disabled { opacity: .3; cursor: not-allowed; }
   </style>
 </head>
+<body>
 
-<h2 class="sr-only">Script interactif pour mini-tutoriels HTML/CSS — naviguez par partie et leçon pour lire le script et copier les extraits de code.</h2>
-<div id="app">
-  <div id="sidebar">
-    <div id="sidebar-header"><h1><i class="ti ti-video" aria-hidden="true"></i> Script Vidéo</h1></div>
+  <div id="topbar">
+    <button id="menu-btn" aria-label="Menu des leçons"><i class="ti ti-menu-2"></i></button>
+    <div id="topbar-info">
+      <div id="lesson-title">Sélectionnez une leçon</div>
+      <div id="lesson-meta"></div>
+    </div>
+    <span id="counter"></span>
+  </div>
+
+  <div id="drawer-overlay"></div>
+  <div id="drawer" role="navigation" aria-label="Leçons">
+    <div id="drawer-head">
+      <span><i class="ti ti-video"></i> Leçons</span>
+      <button id="close-drawer" aria-label="Fermer le menu"><i class="ti ti-x"></i></button>
+    </div>
     <div id="nav-tree"></div>
   </div>
-  <div id="main">
-    <div id="topbar">
-      <span id="lesson-title">Sélectionnez une leçon</span>
-      <span id="lesson-meta"></span>
-    </div>
-    <div id="content"></div>
-  </div>
-</div>
 
-<script>
-const lessons = [
-  {part:"Partie 1 — Bases HTML5",lessons:[
-    {title:"Créez votre première page HTML",meta:"~3 min",
-     intro:"Ouvrir l'éditeur de code (VS Code recommandé) et créer un fichier index.html.",
-     script:[
-       "Bienvenue dans ce premier tutoriel ! Aujourd'hui, on va créer ensemble notre toute première page web en HTML.",
-       "HTML, c'est le squelette de chaque page web que vous visitez. Chaque navigateur sait lire ce langage et l'afficher à l'écran.",
-       "Tout fichier HTML commence par une déclaration de type de document : <span class='highlight'>&lt;!DOCTYPE html&gt;</span>. Ça indique au navigateur qu'il s'agit bien d'un document HTML5.",
-       "Ensuite, on ouvre la balise racine <span class='highlight'>&lt;html&gt;</span>, puis le <span class='highlight'>&lt;head&gt;</span> pour les métadonnées, et le <span class='highlight'>&lt;body&gt;</span> pour tout ce qui sera visible. Je vous recopie le squelette complet ci-dessous."
-     ],
-     tip:"💡 Conseil à dire à l'écran : « Recopiez ce squelette par cœur — vous l'utiliserez dans chaque projet ! »",
-     code:{lang:"html",code:`<span class="cm">&lt;!-- Structure de base HTML5 --&gt;</span>
+  <div id="content"></div>
+
+  <script>
+  const L=[
+    {part:"Partie 1 — Bases HTML5",lessons:[
+      {title:"Première page HTML",meta:"~3 min",
+       prep:"Ouvrir VS Code, créer index.html",
+       script:["Bienvenue dans ce premier tutoriel ! Aujourd'hui on crée ensemble notre toute première page web en HTML.","HTML, c'est le squelette de chaque page web. Chaque navigateur sait lire ce langage et l'afficher à l'écran.","Tout fichier HTML commence par <span class='hl'>&lt;!DOCTYPE html&gt;</span> — ça indique au navigateur qu'il s'agit d'un document HTML5.","Ensuite la balise racine <span class='hl'>&lt;html&gt;</span>, puis <span class='hl'>&lt;head&gt;</span> pour les métadonnées, et <span class='hl'>&lt;body&gt;</span> pour tout ce qui sera visible. Recopiez le squelette ci-dessous !"],
+       tip:"Recopiez ce squelette par cœur — vous l'utiliserez dans chaque projet !",
+       code:`<span class="cm">&lt;!-- Squelette HTML5 --&gt;</span>
 <span class="kw">&lt;!DOCTYPE html&gt;</span>
 <span class="tag">&lt;html</span> <span class="attr">lang</span>=<span class="str">"fr"</span><span class="tag">&gt;</span>
 <span class="tag">&lt;head&gt;</span>
   <span class="tag">&lt;meta</span> <span class="attr">charset</span>=<span class="str">"UTF-8"</span><span class="tag">&gt;</span>
-  <span class="tag">&lt;meta</span> <span class="attr">name</span>=<span class="str">"viewport"</span> <span class="attr">content</span>=<span class="str">"width=device-width"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;meta</span> <span class="attr">name</span>=<span class="str">"viewport"</span>
+        <span class="attr">content</span>=<span class="str">"width=device-width"</span><span class="tag">&gt;</span>
   <span class="tag">&lt;title&gt;</span>Ma première page<span class="tag">&lt;/title&gt;</span>
 <span class="tag">&lt;/head&gt;</span>
 <span class="tag">&lt;body&gt;</span>
   <span class="tag">&lt;h1&gt;</span>Bonjour le monde !<span class="tag">&lt;/h1&gt;</span>
-  <span class="tag">&lt;p&gt;</span>Ma toute première page web.<span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;p&gt;</span>Ma première page web.<span class="tag">&lt;/p&gt;</span>
 <span class="tag">&lt;/body&gt;</span>
-<span class="tag">&lt;/html&gt;</span>`}},
-
-    {title:"Différence entre HTML et CSS",meta:"~2 min",
-     intro:"Montrer un exemple concret côte à côte : HTML seul, puis avec CSS.",
-     script:[
-       "Une question revient souvent chez les débutants : quelle est la différence entre HTML et CSS ?",
-       "HTML, c'est la structure. C'est comme la charpente d'une maison : les murs, les portes, les fenêtres. On définit CE QU'IL Y A sur la page.",
-       "CSS, c'est la décoration. C'est la peinture, le mobilier, les rideaux. On définit COMMENT ça s'affiche : les couleurs, les tailles, les positions.",
-       "Regardez ce code : à gauche, le HTML brut. À droite, le même HTML auquel on a lié un fichier CSS. Même contenu, apparence radicalement différente."
-     ],
-     tip:"💡 Astuce de tournage : affichez les deux fichiers en split-screen dans votre éditeur.",
-     code:{lang:"html",code:`<span class="cm">&lt;!-- HTML : la STRUCTURE --&gt;</span>
+<span class="tag">&lt;/html&gt;</span>`},
+      {title:"HTML vs CSS",meta:"~2 min",
+       prep:"Afficher deux fichiers en split-screen",
+       script:["Quelle est la différence entre HTML et CSS ? Une question qu'on me pose tout le temps !","HTML c'est la structure — la charpente d'une maison : les murs, les portes, les fenêtres. On définit CE QU'IL Y A.","CSS c'est la décoration — la peinture, le mobilier, les rideaux. On définit COMMENT ça s'affiche.","Même contenu HTML, apparence totalement différente selon le CSS appliqué. C'est toute la puissance de cette séparation."],
+       tip:"Montrez les deux fichiers en split-screen dans votre éditeur.",
+       code:`<span class="cm">&lt;!-- HTML : la STRUCTURE --&gt;</span>
 <span class="tag">&lt;h1&gt;</span>Mon titre<span class="tag">&lt;/h1&gt;</span>
 <span class="tag">&lt;p&gt;</span>Mon paragraphe.<span class="tag">&lt;/p&gt;</span>
 <span class="tag">&lt;button&gt;</span>Cliquez ici<span class="tag">&lt;/button&gt;</span>
 
-<span class="cm">&lt;!-- CSS : la MISE EN FORME (dans style.css) --&gt;</span>
-<span class="sel">h1</span> {
-  <span class="prop">color</span>: <span class="val">#7F77DD</span>;
-  <span class="prop">font-size</span>: <span class="val">2rem</span>;
-}
+<span class="cm">/* CSS : la MISE EN FORME */</span>
+<span class="sel">h1</span> { <span class="prop">color</span>: <span class="val">#7F77DD</span>; }
 <span class="sel">button</span> {
   <span class="prop">background</span>: <span class="val">#7F77DD</span>;
   <span class="prop">color</span>: <span class="val">white</span>;
-  <span class="prop">padding</span>: <span class="val">8px 16px</span>;
   <span class="prop">border-radius</span>: <span class="val">6px</span>;
-}`}},
-
-    {title:"Organiser le texte : titres et paragraphes",meta:"~3 min",
-     intro:"Ouvrir index.html et taper le code en direct.",
-     script:[
-       "Pour organiser le texte d'une page, HTML nous offre six niveaux de titres : de h1 à h6. H1 est le plus important, h6 le moins important.",
-       "La règle d'or : une seule balise <span class='highlight'>&lt;h1&gt;</span> par page ! C'est crucial pour le référencement Google et l'accessibilité.",
-       "Les paragraphes se balises avec <span class='highlight'>&lt;p&gt;</span>. Chaque paragraphe est séparé automatiquement par de l'espace.",
-       "Pour les listes, on a <span class='highlight'>&lt;ul&gt;</span> pour les listes à puces, et <span class='highlight'>&lt;ol&gt;</span> pour les listes numérotées. Dans les deux cas, chaque élément s'entoure de la balise <span class='highlight'>&lt;li&gt;</span>."
-     ],
-     tip:"💡 À dire : « Tapez ce code avec moi, lettre par lettre — c'est comme ça qu'on mémorise ! »",
-     code:{lang:"html",code:`<span class="cm">&lt;!-- Les 6 niveaux de titres --&gt;</span>
-<span class="tag">&lt;h1&gt;</span>Titre principal (unique !)<span class="tag">&lt;/h1&gt;</span>
+}`},
+      {title:"Titres, paragraphes, listes",meta:"~3 min",
+       prep:"Ouvrir index.html, taper en direct",
+       script:["Pour organiser le texte, HTML offre six niveaux de titres : de h1 à h6. H1 est le plus important.","Règle d'or : une seule balise <span class='hl'>&lt;h1&gt;</span> par page ! C'est crucial pour le SEO et l'accessibilité.","Les paragraphes se balisent avec <span class='hl'>&lt;p&gt;</span>. Chaque paragraphe est automatiquement séparé.","Pour les listes : <span class='hl'>&lt;ul&gt;</span> pour les puces, <span class='hl'>&lt;ol&gt;</span> pour les numéros. Chaque élément = une balise <span class='hl'>&lt;li&gt;</span>."],
+       tip:"Tapez ce code avec moi — c'est comme ça qu'on mémorise !",
+       code:`<span class="tag">&lt;h1&gt;</span>Titre principal (unique !)<span class="tag">&lt;/h1&gt;</span>
 <span class="tag">&lt;h2&gt;</span>Sous-section<span class="tag">&lt;/h2&gt;</span>
-<span class="tag">&lt;h3&gt;</span>Sous-sous-section<span class="tag">&lt;/h3&gt;</span>
-
-<span class="cm">&lt;!-- Paragraphes --&gt;</span>
-<span class="tag">&lt;p&gt;</span>Un paragraphe de texte normal.<span class="tag">&lt;/p&gt;</span>
+<span class="tag">&lt;p&gt;</span>Un paragraphe normal.<span class="tag">&lt;/p&gt;</span>
 
 <span class="cm">&lt;!-- Liste à puces --&gt;</span>
 <span class="tag">&lt;ul&gt;</span>
@@ -249,82 +231,56 @@ const lessons = [
 <span class="tag">&lt;ol&gt;</span>
   <span class="tag">&lt;li&gt;</span>Première étape<span class="tag">&lt;/li&gt;</span>
   <span class="tag">&lt;li&gt;</span>Deuxième étape<span class="tag">&lt;/li&gt;</span>
-<span class="tag">&lt;/ol&gt;</span>`}},
-
-    {title:"Liens hypertextes et images",meta:"~3 min",
-     intro:"Montrer comment créer des liens internes et externes, puis insérer une image.",
-     script:[
-       "Les liens, c'est l'ADN du web ! La balise <span class='highlight'>&lt;a&gt;</span>, pour 'anchor', permet de naviguer d'une page à l'autre.",
-       "L'attribut <span class='highlight'>href</span> contient la destination. Pour un lien externe, on met l'URL complète avec https://. Pour un lien interne, on met juste le nom du fichier.",
-       "L'attribut <span class='highlight'>target=\"_blank\"</span> ouvre le lien dans un nouvel onglet. Utile pour les liens vers des sites externes !",
-       "Pour les images, on utilise <span class='highlight'>&lt;img&gt;</span>. C'est une balise auto-fermante — pas de balise fermante séparée. L'attribut <span class='highlight'>alt</span> est obligatoire : il décrit l'image pour les personnes malvoyantes et les moteurs de recherche."
-     ],
-     tip:"💡 Bonnes pratiques à rappeler : toujours renseigner l'attribut alt sur les images !",
-     code:{lang:"html",code:`<span class="cm">&lt;!-- Lien externe --&gt;</span>
-<span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="str">"https://www.google.fr"</span>
+<span class="tag">&lt;/ol&gt;</span>`},
+      {title:"Liens et images",meta:"~3 min",
+       prep:"Avoir une image dans le dossier images/",
+       script:["Les liens, c'est l'ADN du web ! La balise <span class='hl'>&lt;a&gt;</span> (pour anchor) permet de naviguer d'une page à l'autre.","L'attribut <span class='hl'>href</span> contient la destination. URL complète pour l'externe, nom de fichier pour l'interne.","<span class='hl'>target=\"_blank\"</span> ouvre dans un nouvel onglet. Pratique pour les liens vers des sites externes !","Pour les images : <span class='hl'>&lt;img&gt;</span> est auto-fermant. L'attribut <span class='hl'>alt</span> est obligatoire pour l'accessibilité et le SEO."],
+       tip:"Toujours renseigner l'attribut alt sur les images — c'est non-négociable !",
+       code:`<span class="cm">&lt;!-- Lien externe --&gt;</span>
+<span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="str">"https://google.fr"</span>
    <span class="attr">target</span>=<span class="str">"_blank"</span><span class="tag">&gt;</span>
   Visiter Google
 <span class="tag">&lt;/a&gt;</span>
 
-<span class="cm">&lt;!-- Lien interne (même dossier) --&gt;</span>
+<span class="cm">&lt;!-- Lien interne --&gt;</span>
 <span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="str">"contact.html"</span><span class="tag">&gt;</span>
   Nous contacter
 <span class="tag">&lt;/a&gt;</span>
 
-<span class="cm">&lt;!-- Image avec texte alternatif --&gt;</span>
+<span class="cm">&lt;!-- Image accessible --&gt;</span>
 <span class="tag">&lt;img</span>
   <span class="attr">src</span>=<span class="str">"images/photo.jpg"</span>
-  <span class="attr">alt</span>=<span class="str">"Paysage de montagne au coucher du soleil"</span>
+  <span class="attr">alt</span>=<span class="str">"Paysage de montagne"</span>
   <span class="attr">width</span>=<span class="str">"600"</span>
-<span class="tag">&gt;</span>`}},
-  ]},
+<span class="tag">&gt;</span>`},
+    ]},
+    {part:"Partie 2 — CSS3",lessons:[
+      {title:"Intégrer le CSS",meta:"~2 min",
+       prep:"Créer style.css dans le même dossier",
+       script:["Trois façons d'ajouter du CSS. Je vous les présente toutes, mais retenez : une seule est vraiment recommandée.","Méthode 1 : CSS inline dans l'attribut <span class='hl'>style</span>. Pratique pour tester, à éviter en production.","Méthode 2 : la balise <span class='hl'>&lt;style&gt;</span> dans le head. Mieux, mais le CSS reste mélangé au HTML.","Méthode 3 : fichier CSS externe lié avec <span class='hl'>&lt;link rel=\"stylesheet\"&gt;</span>. C'est la bonne pratique pro — un fichier HTML propre, réutilisable sur toutes les pages."],
+       tip:"Ouvrez style.css dans un onglet séparé pendant que vous codez index.html.",
+       code:`<span class="cm">&lt;!-- ❌ Inline (à éviter) --&gt;</span>
+<span class="tag">&lt;p</span> <span class="attr">style</span>=<span class="str">"color:red"</span><span class="tag">&gt;</span>Texte<span class="tag">&lt;/p&gt;</span>
 
-  {part:"Partie 2 — Mettre en forme avec CSS3",lessons:[
-    {title:"Intégrer le CSS dans la page HTML",meta:"~2 min",
-     intro:"Montrer les 3 méthodes : inline, balise style, fichier externe.",
-     script:[
-       "Il existe trois façons d'ajouter du CSS à une page HTML. Je vais vous les présenter, mais dès le départ retenez la règle : une seule est vraiment recommandée en production.",
-       "Méthode 1 : le CSS inline, directement dans l'attribut <span class='highlight'>style</span> de la balise. Pratique pour tester, mais à éviter absolument dans un vrai projet.",
-       "Méthode 2 : la balise <span class='highlight'>&lt;style&gt;</span> dans le head. Mieux, mais le CSS reste mélangé au HTML.",
-       "Méthode 3 : le fichier CSS externe, lié avec <span class='highlight'>&lt;link rel=\"stylesheet\"&gt;</span>. C'est la bonne pratique professionnelle. Un fichier HTML propre, un fichier CSS séparé, et on peut réutiliser le même style sur toutes les pages du site."
-     ],
-     tip:"💡 Ouvrez style.css dans un onglet séparé de l'éditeur pendant que vous modifiez index.html.",
-     code:{lang:"html",code:`<span class="cm">&lt;!-- ❌ Méthode 1 : inline (à éviter) --&gt;</span>
-<span class="tag">&lt;p</span> <span class="attr">style</span>=<span class="str">"color: red;"</span><span class="tag">&gt;</span>Texte rouge<span class="tag">&lt;/p&gt;</span>
-
-<span class="cm">&lt;!-- ⚠️ Méthode 2 : balise style --&gt;</span>
-<span class="tag">&lt;style&gt;</span>
-  <span class="sel">p</span> { <span class="prop">color</span>: <span class="val">blue</span>; }
-<span class="tag">&lt;/style&gt;</span>
-
-<span class="cm">&lt;!-- ✅ Méthode 3 : fichier externe (recommandée) --&gt;</span>
+<span class="cm">&lt;!-- ✅ Fichier externe (recommandé) --&gt;</span>
 <span class="tag">&lt;head&gt;</span>
   <span class="tag">&lt;link</span>
     <span class="attr">rel</span>=<span class="str">"stylesheet"</span>
     <span class="attr">href</span>=<span class="str">"style.css"</span>
   <span class="tag">&gt;</span>
-<span class="tag">&lt;/head&gt;</span>`}},
-
-    {title:"Couleurs, texte et typographie",meta:"~4 min",
-     intro:"Créer style.css et typer les propriétés typographiques en direct.",
-     script:[
-       "On entre dans le vif du sujet : la typographie. C'est souvent la première chose qu'on veut personnaliser sur une page.",
-       "La propriété <span class='highlight'>color</span> change la couleur du texte. On peut utiliser un nom de couleur, un code hexadécimal, ou une valeur RGB.",
-       "Pour la police, <span class='highlight'>font-family</span> accepte une liste de polices. On en met plusieurs en cas de secours — si la première n'est pas disponible, le navigateur passe à la suivante.",
-       "Google Fonts est votre meilleur ami pour les polices gratuites. Il suffit de coller le lien dans le head, puis d'utiliser le nom de la police en CSS.",
-       "Pensez aussi à <span class='highlight'>font-size</span>, <span class='highlight'>font-weight</span> pour le gras, et <span class='highlight'>line-height</span> pour l'interlignage — indispensable pour la lisibilité !"
-     ],
-     tip:"💡 À montrer : changez la couleur en live avec les DevTools du navigateur (F12).",
-     code:{lang:"html",code:`<span class="cm">/* Dans style.css */</span>
-
-<span class="cm">/* Import d'une police Google Fonts */</span>
+<span class="tag">&lt;/head&gt;</span>`},
+      {title:"Typographie et couleurs",meta:"~4 min",
+       prep:"Ouvrir style.css, taper en live",
+       script:["La typographie, c'est souvent la première chose qu'on veut personnaliser. Commençons par les fondamentaux.","<span class='hl'>color</span> change la couleur du texte — nom, code hex, ou valeur rgb. <span class='hl'>font-family</span> définit la police.","Google Fonts est votre meilleur ami pour les polices gratuites : copiez le lien dans le head, utilisez le nom en CSS.","Pensez aussi à <span class='hl'>font-size</span>, <span class='hl'>font-weight</span> pour le gras, et surtout <span class='hl'>line-height</span> — indispensable pour la lisibilité !"],
+       tip:"Changez les couleurs en live avec les DevTools du navigateur (F12) !",
+       code:`<span class="cm">/* Import Google Fonts */</span>
 <span class="kw">@import</span> <span class="val">url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap')</span>;
 
 <span class="sel">body</span> {
   <span class="prop">font-family</span>: <span class="val">'Poppins', sans-serif</span>;
   <span class="prop">font-size</span>: <span class="val">16px</span>;
   <span class="prop">line-height</span>: <span class="val">1.6</span>;
-  <span class="prop">color</span>: <span class="val">#333333</span>;
+  <span class="prop">color</span>: <span class="val">#333</span>;
 }
 
 <span class="sel">h1</span> {
@@ -332,72 +288,29 @@ const lessons = [
   <span class="prop">font-weight</span>: <span class="val">600</span>;
   <span class="prop">color</span>: <span class="val">#7F77DD</span>;
   <span class="prop">text-align</span>: <span class="val">center</span>;
-}
-
-<span class="sel">p</span> {
-  <span class="prop">color</span>: <span class="val">rgb(80, 80, 80)</span>;
-  <span class="prop">margin-bottom</span>: <span class="val">1rem</span>;
-}`}},
-
-    {title:"Couleurs, fonds et bordures",meta:"~3 min",
-     intro:"Styler une carte avec fond, bordure et ombre.",
-     script:[
-       "Passons aux couleurs de fond et aux bordures. Ces propriétés transforment complètement l'aspect d'une page.",
-       "<span class='highlight'>background-color</span> colore le fond d'un élément. <span class='highlight'>background-image</span> permet d'utiliser une image ou même un dégradé !",
-       "La propriété <span class='highlight'>border</span> est un raccourci magique : en une ligne, on définit l'épaisseur, le style et la couleur.",
-       "Et <span class='highlight'>border-radius</span>, c'est la propriété qui arrondit les coins. Avec 50%, vous obtenez un cercle parfait !",
-       "Enfin, <span class='highlight'>box-shadow</span> pour les ombres. La syntaxe : décalage horizontal, décalage vertical, flou, et couleur."
-     ],
-     tip:"💡 Astuce : utilisez des couleurs semi-transparentes avec rgba() pour les ombres.",
-     code:{lang:"html",code:`<span class="cm">/* Fonds et dégradés */</span>
-<span class="sel">.carte</span> {
+}`},
+      {title:"Fonds, bordures et ombres",meta:"~3 min",
+       prep:"Créer une div.carte dans index.html",
+       script:["<span class='hl'>background-color</span> colore le fond. <span class='hl'>background-image</span> accepte aussi des dégradés avec linear-gradient !","La propriété <span class='hl'>border</span> en raccourci : épaisseur, style, couleur — tout en une ligne.","<span class='hl'>border-radius</span> arrondit les coins. Avec 50%, vous obtenez un cercle parfait !","<span class='hl'>box-shadow</span> pour les ombres : décalage X, décalage Y, flou, couleur. Utilisez rgba() pour la transparence."],
+       tip:"Utilisez des couleurs semi-transparentes avec rgba() pour des ombres douces.",
+       code:`<span class="sel">.carte</span> {
   <span class="prop">background-color</span>: <span class="val">#ffffff</span>;
-  <span class="prop">background-image</span>: <span class="val">linear-gradient(135deg, #667eea, #764ba2)</span>;
   <span class="prop">padding</span>: <span class="val">2rem</span>;
-}
-
-<span class="cm">/* Bordures */</span>
-<span class="sel">.encadre</span> {
   <span class="prop">border</span>: <span class="val">2px solid #7F77DD</span>;
   <span class="prop">border-radius</span>: <span class="val">12px</span>;
+  <span class="prop">box-shadow</span>: <span class="val">0 4px 20px rgba(0,0,0,0.15)</span>;
 }
 
-<span class="cm">/* Ombre portée */</span>
-<span class="sel">.ombre</span> {
-  <span class="prop">box-shadow</span>: <span class="val">0 4px 20px rgba(0, 0, 0, 0.15)</span>;
-}
-
-<span class="cm">/* Cercle */</span>
 <span class="sel">.avatar</span> {
   <span class="prop">width</span>: <span class="val">60px</span>;
   <span class="prop">height</span>: <span class="val">60px</span>;
   <span class="prop">border-radius</span>: <span class="val">50%</span>;
-}`}},
-
-    {title:"Pseudo-classes et effets dynamiques",meta:"~3 min",
-     intro:"Montrer les effets hover et focus en direct dans le navigateur.",
-     script:[
-       "Les pseudo-classes, c'est ce qui rend vos pages vivantes ! Elles s'appliquent selon l'état d'un élément.",
-       "La plus utilisée : <span class='highlight'>:hover</span>. Elle s'active quand la souris passe sur l'élément. Parfaite pour les boutons et les liens !",
-       "<span class='highlight'>:focus</span> s'active quand un champ de formulaire est sélectionné — indispensable pour l'accessibilité.",
-       "Et pour rendre les transitions douces, on utilise la propriété <span class='highlight'>transition</span>. Elle anime automatiquement le passage d'un état à l'autre.",
-       "Regardez la différence : sans transition, le changement est brutal. Avec, c'est fluide et professionnel."
-     ],
-     tip:"💡 À montrer en direct : inspecter l'élément dans les DevTools et cocher/décocher :hover.",
-     code:{lang:"html",code:`<span class="cm">/* Effets au survol */</span>
-<span class="sel">a</span> {
-  <span class="prop">color</span>: <span class="val">#7F77DD</span>;
-  <span class="prop">text-decoration</span>: <span class="val">none</span>;
-  <span class="prop">transition</span>: <span class="val">color 0.2s ease</span>;
-}
-
-<span class="sel">a:hover</span> {
-  <span class="prop">color</span>: <span class="val">#534AB7</span>;
-  <span class="prop">text-decoration</span>: <span class="val">underline</span>;
-}
-
-<span class="cm">/* Bouton interactif */</span>
-<span class="sel">.btn</span> {
+}`},
+      {title:"Pseudo-classes et transitions",meta:"~3 min",
+       prep:"Avoir un bouton .btn dans la page",
+       script:["Les pseudo-classes rendent vos pages vivantes ! Elles s'appliquent selon l'état d'un élément.","<span class='hl'>:hover</span> s'active quand la souris passe sur l'élément. Parfait pour les boutons et les liens !","<span class='hl'>:focus</span> s'active quand un champ est sélectionné — indispensable pour l'accessibilité au clavier.","La propriété <span class='hl'>transition</span> anime automatiquement les changements d'état. Sans elle, tout change brutalement. Avec, c'est fluide et professionnel."],
+       tip:"Dans les DevTools : clic droit > Inspecter > cocher :hover pour simuler l'état.",
+       code:`<span class="sel">.btn</span> {
   <span class="prop">background</span>: <span class="val">#7F77DD</span>;
   <span class="prop">color</span>: <span class="val">white</span>;
   <span class="prop">padding</span>: <span class="val">10px 24px</span>;
@@ -406,71 +319,43 @@ const lessons = [
   <span class="prop">cursor</span>: <span class="val">pointer</span>;
   <span class="prop">transition</span>: <span class="val">all 0.2s ease</span>;
 }
-
 <span class="sel">.btn:hover</span> {
   <span class="prop">background</span>: <span class="val">#534AB7</span>;
   <span class="prop">transform</span>: <span class="val">translateY(-2px)</span>;
-  <span class="prop">box-shadow</span>: <span class="val">0 6px 16px rgba(127,119,221,0.4)</span>;
 }
-
 <span class="sel">input:focus</span> {
   <span class="prop">outline</span>: <span class="val">2px solid #7F77DD</span>;
-  <span class="prop">border-color</span>: <span class="val">#7F77DD</span>;
-}`}},
-  ]},
-
-  {part:"Partie 3 — Agencer le contenu",lessons:[
-    {title:"Le box model : marges et padding",meta:"~4 min",
-     intro:"Dessiner le box model au tableau ou via un schéma à l'écran.",
-     script:[
-       "Le box model, c'est probablement le concept le plus important en CSS. Comprendre ça, c'est comprendre comment le navigateur place chaque élément.",
-       "Chaque élément HTML est une boîte composée de quatre couches, de l'intérieur vers l'extérieur : le contenu, le padding, la bordure, et la marge.",
-       "<span class='highlight'>padding</span> : l'espace entre le contenu et la bordure. C'est l'espace intérieur.",
-       "<span class='highlight'>margin</span> : l'espace entre la bordure et les éléments voisins. C'est l'espace extérieur.",
-       "Par défaut, width ne compte que le contenu. Avec <span class='highlight'>box-sizing: border-box</span>, la largeur inclut padding et bordure — ce qui est beaucoup plus intuitif. Appliquez-le à tout en utilisant le sélecteur universel *."
-     ],
-     tip:"💡 Montrer les DevTools : onglet 'Computed' → le schéma box model interactif.",
-     code:{lang:"html",code:`<span class="cm">/* Appliquer box-sizing globalement — toujours ! */</span>
+}`},
+    ]},
+    {part:"Partie 3 — Mise en page",lessons:[
+      {title:"Le box model",meta:"~4 min",
+       prep:"Ouvrir les DevTools, onglet Computed",
+       script:["Le box model, c'est LE concept le plus important en CSS. Comprenez ça, vous comprenez tout.","Chaque élément HTML est une boîte à quatre couches : contenu, padding, bordure, marge.","<span class='hl'>padding</span> = espace intérieur entre le contenu et la bordure. <span class='hl'>margin</span> = espace extérieur entre la bordure et les voisins.","Appliquez toujours <span class='hl'>box-sizing: border-box</span> — la largeur inclut alors padding et bordure. Beaucoup plus intuitif !"],
+       tip:"Montrez l'onglet Computed dans les DevTools — il affiche le schéma box model interactif.",
+       code:`<span class="cm">/* Reset global — toujours mettre ! */</span>
 <span class="sel">*</span> {
   <span class="prop">box-sizing</span>: <span class="val">border-box</span>;
   <span class="prop">margin</span>: <span class="val">0</span>;
   <span class="prop">padding</span>: <span class="val">0</span>;
 }
-
 <span class="sel">.carte</span> {
   <span class="prop">width</span>: <span class="val">300px</span>;
-
-  <span class="cm">/* Espace intérieur (4 côtés) */</span>
-  <span class="prop">padding</span>: <span class="val">24px</span>;
-
-  <span class="cm">/* Raccourcis : haut/bas puis gauche/droite */</span>
   <span class="prop">padding</span>: <span class="val">16px 24px</span>;
-
-  <span class="cm">/* Espace extérieur */</span>
-  <span class="prop">margin</span>: <span class="val">0 auto</span>; <span class="cm">/* centrage horizontal !</span>
-
+  <span class="prop">margin</span>: <span class="val">0 auto</span>; <span class="cm">/* centrage !</span>
   <span class="prop">border</span>: <span class="val">1px solid #ccc</span>;
   <span class="prop">border-radius</span>: <span class="val">12px</span>;
-}`}},
-
-    {title:"Mise en page avec Flexbox",meta:"~5 min",
-     intro:"Créer une barre de navigation et une grille de cartes avec Flexbox.",
-     script:[
-       "Flexbox, c'est la révolution de la mise en page CSS. Avant Flexbox, centrer un élément verticalement était un cauchemar. Maintenant, c'est trois lignes.",
-       "On active Flexbox sur le conteneur parent avec <span class='highlight'>display: flex</span>. Les enfants directs deviennent automatiquement des 'flex items'.",
-       "<span class='highlight'>justify-content</span> contrôle la disposition sur l'axe principal — horizontalement par défaut. La valeur <span class='highlight'>space-between</span> répartit les éléments avec de l'espace entre eux.",
-       "<span class='highlight'>align-items</span> contrôle l'alignement sur l'axe secondaire — verticalement par défaut.",
-       "Et pour centrer parfaitement un élément dans son conteneur : <span class='highlight'>justify-content: center</span> et <span class='highlight'>align-items: center</span>. Magique !"
-     ],
-     tip:"💡 Outil à recommander : Flexbox Froggy (flexboxfroggy.com) pour s'entraîner de façon ludique.",
-     code:{lang:"html",code:`<span class="cm">/* Centrage parfait avec Flexbox */</span>
+}`},
+      {title:"Flexbox",meta:"~5 min",
+       prep:"Créer une nav et une .grille dans HTML",
+       script:["Flexbox, c'est la révolution de la mise en page CSS. Centrer un élément verticalement ? Trois lignes suffisent.","On active Flexbox sur le conteneur parent avec <span class='hl'>display: flex</span>. Les enfants deviennent automatiquement des flex items.","<span class='hl'>justify-content</span> contrôle l'axe principal (horizontal). <span class='hl'>align-items</span> contrôle l'axe secondaire (vertical).","Pour centrer parfaitement : <span class='hl'>justify-content: center</span> + <span class='hl'>align-items: center</span>. Magique !"],
+       tip:"Entraînez-vous sur flexboxfroggy.com — c'est un jeu pour apprendre Flexbox !",
+       code:`<span class="cm">/* Centrage parfait */</span>
 <span class="sel">.hero</span> {
   <span class="prop">display</span>: <span class="val">flex</span>;
   <span class="prop">justify-content</span>: <span class="val">center</span>;
   <span class="prop">align-items</span>: <span class="val">center</span>;
   <span class="prop">height</span>: <span class="val">100vh</span>;
 }
-
 <span class="cm">/* Barre de navigation */</span>
 <span class="sel">nav</span> {
   <span class="prop">display</span>: <span class="val">flex</span>;
@@ -478,209 +363,152 @@ const lessons = [
   <span class="prop">align-items</span>: <span class="val">center</span>;
   <span class="prop">padding</span>: <span class="val">1rem 2rem</span>;
 }
-
-<span class="cm">/* Grille de cartes responsives */</span>
+<span class="cm">/* Grille de cartes */</span>
 <span class="sel">.grille</span> {
   <span class="prop">display</span>: <span class="val">flex</span>;
   <span class="prop">flex-wrap</span>: <span class="val">wrap</span>;
   <span class="prop">gap</span>: <span class="val">1.5rem</span>;
 }
-
 <span class="sel">.grille .carte</span> {
-  <span class="prop">flex</span>: <span class="val">1 1 280px</span>; <span class="cm">/* min 280px, grandit si possible */</span>
-}`}},
-
-    {title:"Introduction à CSS Grid",meta:"~4 min",
-     intro:"Recréer une mise en page avec en-tête, sidebar, contenu et pied de page.",
-     script:[
-       "Si Flexbox est parfait pour les composants en une dimension, CSS Grid excelle pour les mises en page en deux dimensions : lignes ET colonnes simultanément.",
-       "On active Grid avec <span class='highlight'>display: grid</span>. Ensuite, on définit les colonnes avec <span class='highlight'>grid-template-columns</span>.",
-       "La valeur <span class='highlight'>1fr</span> signifie 'une fraction de l'espace disponible'. Avec <span class='highlight'>repeat(3, 1fr)</span>, on crée trois colonnes égales.",
-       "La propriété <span class='highlight'>gap</span> crée de l'espace entre toutes les cellules — beaucoup plus pratique que les marges !",
-       "Et pour positionner un élément sur plusieurs colonnes ou lignes : <span class='highlight'>grid-column: 1 / 3</span> s'étend de la colonne 1 à la colonne 3."
-     ],
-     tip:"💡 Outil : Grid Garden (cssgridgarden.com). Et Firefox DevTools a le meilleur inspecteur Grid !",
-     code:{lang:"html",code:`<span class="cm">/* Mise en page classique avec Grid */</span>
-<span class="sel">.page</span> {
+  <span class="prop">flex</span>: <span class="val">1 1 280px</span>;
+}`},
+      {title:"CSS Grid",meta:"~4 min",
+       prep:"Créer header / sidebar / main / footer",
+       script:["CSS Grid excelle pour les mises en page en deux dimensions — lignes ET colonnes simultanément.","On active Grid avec <span class='hl'>display: grid</span>. <span class='hl'>grid-template-columns</span> définit les colonnes.","<span class='hl'>1fr</span> signifie une fraction de l'espace disponible. <span class='hl'>repeat(3, 1fr)</span> = trois colonnes égales.","La propriété <span class='hl'>gap</span> crée de l'espace entre toutes les cellules. Et <span class='hl'>grid-column: 1 / -1</span> étend un élément sur toute la largeur."],
+       tip:"Firefox DevTools a le meilleur inspecteur Grid. Entraînez-vous sur cssgridgarden.com !",
+       code:`<span class="sel">.page</span> {
   <span class="prop">display</span>: <span class="val">grid</span>;
   <span class="prop">grid-template-columns</span>: <span class="val">250px 1fr</span>;
-  <span class="prop">grid-template-rows</span>: <span class="val">auto 1fr auto</span>;
   <span class="prop">min-height</span>: <span class="val">100vh</span>;
-  <span class="prop">gap</span>: <span class="val">0</span>;
 }
-
-<span class="sel">header</span> {
-  <span class="prop">grid-column</span>: <span class="val">1 / -1</span>; <span class="cm">/* s'étend sur toutes les colonnes */</span>
-}
-
-<span class="sel">footer</span> {
+<span class="sel">header</span>, <span class="sel">footer</span> {
   <span class="prop">grid-column</span>: <span class="val">1 / -1</span>;
 }
-
-<span class="cm">/* Grille de 3 colonnes responsives */</span>
+<span class="cm">/* Grille responsive auto */</span>
 <span class="sel">.articles</span> {
   <span class="prop">display</span>: <span class="val">grid</span>;
-  <span class="prop">grid-template-columns</span>: <span class="val">repeat(auto-fit, minmax(280px, 1fr))</span>;
+  <span class="prop">grid-template-columns</span>:
+    <span class="val">repeat(auto-fit, minmax(280px, 1fr))</span>;
   <span class="prop">gap</span>: <span class="val">1.5rem</span>;
-  <span class="prop">padding</span>: <span class="val">2rem</span>;
-}`}},
-  ]},
+}`},
+    ]},
+    {part:"Partie 4 — Avancé",lessons:[
+      {title:"Formulaires HTML",meta:"~5 min",
+       prep:"Créer contact.html",
+       script:["Les formulaires permettent à vos visiteurs de vous écrire : inscription, contact, commande...","La balise <span class='hl'>&lt;form&gt;</span> enveloppe tout. <span class='hl'>action</span> = où envoyer les données. <span class='hl'>method</span> = GET ou POST.","Chaque champ est un <span class='hl'>&lt;input&gt;</span> avec un attribut <span class='hl'>type</span> : text, email, password, checkbox, file...","Associez toujours un <span class='hl'>&lt;label&gt;</span> à chaque champ via <span class='hl'>for</span> + <span class='hl'>id</span>. C'est essentiel pour l'accessibilité !"],
+       tip:"HTML5 valide automatiquement les champs avec type='email', required, minlength, etc.",
+       code:`<span class="tag">&lt;form</span> <span class="attr">action</span>=<span class="str">"/contact"</span>
+      <span class="attr">method</span>=<span class="str">"POST"</span><span class="tag">&gt;</span>
 
-  {part:"Partie 4 — Fonctionnalités avancées",lessons:[
-    {title:"Formulaires HTML complets",meta:"~5 min",
-     intro:"Créer un formulaire de contact de A à Z.",
-     script:[
-       "Les formulaires, c'est le moyen pour vos visiteurs de communiquer avec vous : inscription, contact, commande...",
-       "La balise <span class='highlight'>&lt;form&gt;</span> enveloppe tout le formulaire. L'attribut <span class='highlight'>action</span> indique où envoyer les données, et <span class='highlight'>method</span> définit comment : GET ou POST.",
-       "Chaque champ est un <span class='highlight'>&lt;input&gt;</span> avec un attribut <span class='highlight'>type</span>. Il y en a beaucoup : text, email, password, checkbox, radio, file...",
-       "Associez toujours un <span class='highlight'>&lt;label&gt;</span> à chaque champ via l'attribut <span class='highlight'>for</span> qui correspond à l'id de l'input. C'est essentiel pour l'accessibilité.",
-       "Pour les grands textes, utilisez <span class='highlight'>&lt;textarea&gt;</span>. Et n'oubliez pas le bouton <span class='highlight'>&lt;button type=\"submit\"&gt;</span> pour envoyer !"
-     ],
-     tip:"💡 HTML5 gère déjà la validation basique avec les attributs required, type='email', minlength, etc.",
-     code:{lang:"html",code:`<span class="tag">&lt;form</span> <span class="attr">action</span>=<span class="str">"/contact"</span> <span class="attr">method</span>=<span class="str">"POST"</span><span class="tag">&gt;</span>
-
-  <span class="cm">&lt;!-- Champ texte --&gt;</span>
   <span class="tag">&lt;label</span> <span class="attr">for</span>=<span class="str">"nom"</span><span class="tag">&gt;</span>Votre nom<span class="tag">&lt;/label&gt;</span>
-  <span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="str">"text"</span> <span class="attr">id</span>=<span class="str">"nom"</span>
-         <span class="attr">name</span>=<span class="str">"nom"</span> <span class="attr">required</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="str">"text"</span>
+         <span class="attr">id</span>=<span class="str">"nom"</span> <span class="attr">required</span><span class="tag">&gt;</span>
 
-  <span class="cm">&lt;!-- Email (validé automatiquement) --&gt;</span>
   <span class="tag">&lt;label</span> <span class="attr">for</span>=<span class="str">"email"</span><span class="tag">&gt;</span>Email<span class="tag">&lt;/label&gt;</span>
-  <span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="str">"email"</span> <span class="attr">id</span>=<span class="str">"email"</span>
-         <span class="attr">name</span>=<span class="str">"email"</span> <span class="attr">required</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="str">"email"</span>
+         <span class="attr">id</span>=<span class="str">"email"</span> <span class="attr">required</span><span class="tag">&gt;</span>
 
-  <span class="cm">&lt;!-- Zone de texte --&gt;</span>
-  <span class="tag">&lt;label</span> <span class="attr">for</span>=<span class="str">"message"</span><span class="tag">&gt;</span>Message<span class="tag">&lt;/label&gt;</span>
-  <span class="tag">&lt;textarea</span> <span class="attr">id</span>=<span class="str">"message"</span> <span class="attr">name</span>=<span class="str">"message"</span>
+  <span class="tag">&lt;label</span> <span class="attr">for</span>=<span class="str">"msg"</span><span class="tag">&gt;</span>Message<span class="tag">&lt;/label&gt;</span>
+  <span class="tag">&lt;textarea</span> <span class="attr">id</span>=<span class="str">"msg"</span>
              <span class="attr">rows</span>=<span class="str">"5"</span> <span class="attr">required</span><span class="tag">&gt;&lt;/textarea&gt;</span>
 
   <span class="tag">&lt;button</span> <span class="attr">type</span>=<span class="str">"submit"</span><span class="tag">&gt;</span>Envoyer<span class="tag">&lt;/button&gt;</span>
-
-<span class="tag">&lt;/form&gt;</span>`}},
-
-    {title:"Responsive design avec Media Queries",meta:"~4 min",
-     intro:"Adapter la grille de cartes pour mobile, tablette et desktop.",
-     script:[
-       "Aujourd'hui, plus de 60% des visites web se font sur mobile. Il est donc indispensable que nos pages s'adaptent à toutes les tailles d'écran.",
-       "Le responsive design repose sur trois piliers : des mises en page fluides, des images flexibles, et les Media Queries CSS.",
-       "Une Media Query s'écrit avec <span class='highlight'>@media</span> suivi d'une condition sur la largeur de l'écran. À l'intérieur, on réécrit les règles CSS qui doivent changer.",
-       "L'approche recommandée est le 'mobile first' : on code d'abord pour les petits écrans, puis on ajoute des Media Queries pour les agrandir progressivement.",
-       "Les points de rupture classiques : 768px pour tablette, 1024px pour desktop. Mais adaptez-les à votre contenu, pas à des appareils spécifiques !"
-     ],
-     tip:"💡 À montrer : le mode responsive des DevTools (Ctrl+Shift+M) pour simuler différents écrans.",
-     code:{lang:"html",code:`<span class="cm">/* Mobile first : style de base pour mobile */</span>
+<span class="tag">&lt;/form&gt;</span>`},
+      {title:"Responsive et Media Queries",meta:"~4 min",
+       prep:"DevTools en mode mobile (Ctrl+Shift+M)",
+       script:["60% des visites web se font sur mobile. Nos pages doivent s'adapter à toutes les tailles d'écran.","Les Media Queries CSS s'écrivent avec <span class='hl'>@media</span> suivi d'une condition sur la largeur. On réécrit les règles qui changent.","L'approche recommandée : Mobile First. On code d'abord pour les petits écrans, puis on agrandit progressivement.","Points de rupture classiques : 768px tablette, 1024px desktop. Adaptez-les à votre contenu, pas à des appareils !"],
+       tip:"Simulez différents écrans avec le mode responsive des DevTools (Ctrl+Shift+M).",
+       code:`<span class="cm">/* Mobile first : style de base */</span>
 <span class="sel">.grille</span> {
   <span class="prop">display</span>: <span class="val">grid</span>;
-  <span class="prop">grid-template-columns</span>: <span class="val">1fr</span>; <span class="cm">/* 1 colonne */</span>
+  <span class="prop">grid-template-columns</span>: <span class="val">1fr</span>;
   <span class="prop">gap</span>: <span class="val">1rem</span>;
-  <span class="prop">padding</span>: <span class="val">1rem</span>;
 }
-
 <span class="cm">/* Tablette (≥ 768px) */</span>
 <span class="kw">@media</span> (min-width: <span class="num">768px</span>) {
   <span class="sel">.grille</span> {
     <span class="prop">grid-template-columns</span>: <span class="val">repeat(2, 1fr)</span>;
-    <span class="prop">padding</span>: <span class="val">1.5rem</span>;
-  }
-  <span class="sel">nav</span> {
-    <span class="prop">display</span>: <span class="val">flex</span>;
   }
 }
-
 <span class="cm">/* Desktop (≥ 1024px) */</span>
 <span class="kw">@media</span> (min-width: <span class="num">1024px</span>) {
   <span class="sel">.grille</span> {
     <span class="prop">grid-template-columns</span>: <span class="val">repeat(3, 1fr)</span>;
-    <span class="prop">padding</span>: <span class="val">2rem</span>;
   }
-}`}},
-  ]},
-];
+}`},
+    ]},
+  ];
 
-let currentPart = 0, currentLesson = 0;
+  let cp=0,cl=0;
+  function flat(){const a=[];L.forEach((p,pi)=>p.lessons.forEach((_,li)=>a.push([pi,li])));return a}
 
-function renderNav(){
-  const tree = document.getElementById('nav-tree');
-  tree.innerHTML = '';
-  lessons.forEach((part,pi)=>{
-    const g = document.createElement('div');
-    g.className='part-group';
-    g.innerHTML=`<div class="part-title">Partie ${pi+1}</div>`;
-    part.lessons.forEach((l,li)=>{
-      const b=document.createElement('button');
-      b.className='lesson-btn'+(pi===currentPart&&li===currentLesson?' active':'');
-      b.textContent=l.title;
-      b.onclick=()=>{currentPart=pi;currentLesson=li;renderNav();renderContent()};
-      g.appendChild(b);
+  function renderNav(){
+    const t=document.getElementById('nav-tree');
+    t.innerHTML='';
+    L.forEach((p,pi)=>{
+      const g=document.createElement('div');
+      g.innerHTML=`<div class="part-label">Partie ${pi+1}</div>`;
+      p.lessons.forEach((l,li)=>{
+        const b=document.createElement('button');
+        b.className='l-btn'+(pi===cp&&li===cl?' active':'');
+        b.textContent=l.title;
+        b.onclick=()=>{cp=pi;cl=li;closeDrawer();renderNav();renderContent();window.scrollTo(0,0)};
+        g.appendChild(b);
+      });
+      t.appendChild(g);
     });
-    tree.appendChild(g);
-  });
-}
+  }
 
-function copyCode(btn, text){
-  const clean = text.replace(/<[^>]+>/g,'');
-  navigator.clipboard.writeText(clean).then(()=>{
-    btn.textContent='✓ Copié !';
-    btn.classList.add('copied');
-    setTimeout(()=>{btn.textContent='Copier';btn.classList.remove('copied')},2000);
-  });
-}
-
-function renderContent(){
-  const l=lessons[currentPart].lessons[currentLesson];
-  document.getElementById('lesson-title').textContent=l.title;
-  document.getElementById('lesson-meta').textContent=`Partie ${currentPart+1} · ${l.meta}`;
-  
-  const total = lessons.reduce((a,p)=>a+p.lessons.length,0);
-  let idx=0;
-  for(let i=0;i<currentPart;i++) idx+=lessons[i].lessons.length;
-  idx+=currentLesson;
-
-  const prevEnabled = idx>0;
-  const nextEnabled = idx<total-1;
-
-  document.getElementById('content').innerHTML=`
-    <div class="section-label"><i class="ti ti-message-circle" aria-hidden="true"></i> Script à dire</div>
-    <div class="script-box">
-      <div class="intro"><i class="ti ti-video" aria-hidden="true"></i> Prép. : ${l.intro}</div>
-      ${l.script.map(p=>`<p>${p}</p>`).join('')}
-    </div>
-    <div class="tip-box">${l.tip}</div>
-    <div class="section-label"><i class="ti ti-code" aria-hidden="true"></i> Code à afficher / recopier</div>
-    <div class="code-block">
-      <div class="code-header">
-        <span class="code-lang">${l.code.lang}</span>
-        <button class="copy-btn" onclick="copyCode(this,'${encodeURIComponent(l.code.code)}')">Copier</button>
+  function renderContent(){
+    const l=L[cp].lessons[cl];
+    const f=flat();
+    const idx=f.findIndex(([pi,li])=>pi===cp&&li===cl);
+    document.getElementById('lesson-title').textContent=l.title;
+    document.getElementById('lesson-meta').textContent=`Partie ${cp+1} · ${l.meta}`;
+    document.getElementById('counter').textContent=`${idx+1}/${f.length}`;
+    document.title=`${l.title} — Script HTML/CSS`;
+    document.getElementById('content').innerHTML=`
+      <div class="sec-label" style="margin-top:1rem"><i class="ti ti-player-record"></i> Préparation</div>
+      <div class="prep-box"><i class="ti ti-player-record"></i>${l.prep}</div>
+      <div class="sec-label"><i class="ti ti-message-circle"></i> Script</div>
+      <div class="script-box">${l.script.map(p=>`<p>${p}</p>`).join('')}</div>
+      <div class="tip-box"><i class="ti ti-bulb" style="color:#7F77DD;margin-right:4px"></i>${l.tip}</div>
+      <div class="sec-label"><i class="ti ti-code"></i> Code à recopier</div>
+      <div class="code-wrap">
+        <div class="code-hdr">
+          <span class="code-lang">HTML / CSS</span>
+          <button class="copy-btn">Copier</button>
+        </div>
+        <pre>${l.code}</pre>
       </div>
-      <pre>${l.code.code}</pre>
-    </div>
-    <div class="nav-btns">
-      <button class="nav-btn" ${prevEnabled?'':'disabled'} onclick="navigate(-1)">← Précédent</button>
-      <button class="nav-btn" ${nextEnabled?'':'disabled'} onclick="navigate(1)">Suivant →</button>
-    </div>
-  `;
-
-  document.querySelectorAll('.copy-btn').forEach(btn=>{
-    btn.onclick=function(){
-      const pre=this.closest('.code-block').querySelector('pre');
-      const clean=pre.innerText;
-      navigator.clipboard.writeText(clean).then(()=>{
-        this.textContent='✓ Copié !';
-        this.classList.add('copied');
-        setTimeout(()=>{this.textContent='Copier';this.classList.remove('copied')},2000);
+      <div class="nav-row">
+        <button class="nav-btn" ${idx>0?'':'disabled'} onclick="nav(-1)"><i class="ti ti-arrow-left"></i> Précédent</button>
+        <button class="nav-btn" ${idx<f.length-1?'':'disabled'} onclick="nav(1)">Suivant <i class="ti ti-arrow-right"></i></button>
+      </div>
+    `;
+    document.querySelector('.copy-btn').onclick=function(){
+      const txt=document.querySelector('pre').innerText;
+      navigator.clipboard.writeText(txt).then(()=>{
+        this.textContent='✓ Copié !';this.classList.add('ok');
+        setTimeout(()=>{this.textContent='Copier';this.classList.remove('ok')},2000);
       });
     };
-  });
-}
+  }
 
-window.navigate=function(dir){
-  const flat=[];
-  lessons.forEach((p,pi)=>p.lessons.forEach((_,li)=>flat.push([pi,li])));
-  let idx=flat.findIndex(([pi,li])=>pi===currentPart&&li===currentLesson);
-  idx+=dir;
-  if(idx>=0&&idx<flat.length){[currentPart,currentLesson]=flat[idx];renderNav();renderContent()}
-};
+  window.nav=function(d){
+    const f=flat();
+    let i=f.findIndex(([pi,li])=>pi===cp&&li===cl)+d;
+    if(i>=0&&i<f.length){[cp,cl]=f[i];renderNav();renderContent();window.scrollTo(0,0)}
+  };
 
-renderNav();
-renderContent();
-</script>
+  function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('drawer-overlay').classList.add('open')}
+  function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawer-overlay').classList.remove('open')}
+  document.getElementById('menu-btn').onclick=openDrawer;
+  document.getElementById('close-drawer').onclick=closeDrawer;
+  document.getElementById('drawer-overlay').onclick=closeDrawer;
+
+  renderNav();
+  renderContent();
+  </script>
+</body>
+</html>
